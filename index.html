@@ -9,8 +9,9 @@
 	<div class="mensagem" id="mensagem">
 		<h1>Olá, mundo</h1>
 		<p>Essa é uma calculadora desenvolvida por Eduardo Monteiro</p>
-		<p>Você está interagindo com a versão 0.9</p>
-		<p>Caso encontre algum erro, sinto muito pelo ocorrido =/</p>
+		<p>Você está interagindo com a versão 0.9.5</p>
+		<p>Atualização: Erro de vírgulas infinitas arrumado</p>
+		<p>Essa versão possui alguns erros que estão sendo arrumados</p>
 		<p>Se possível me de um feedback, obrigado.</p>
 	</div>
 	<div class="base" id="base">
@@ -38,7 +39,7 @@
 
 			<div id="pot" class="botao" onclick="coletando('^')">^</div>
 			<div id="0" class="botao" onclick="coletando('0')">0</div>
-			<div id="ponto" class="botao" onclick="coletando('.')">,</div>
+			<div id="ponto" class="botao" onclick="coletando(',')">,</div>
 			<div id="result" class="botao" onclick="coletando('result')">=</div>
 		</div>
 	</div>
@@ -86,9 +87,10 @@
 		margin: 1vw;
 		color: white;
 		background: black;
-		display: flex;
 		font-family: arial;
 		font-size: 2vw;
+		display: flex;
+		flex-wrap: wrap;
 		align-items: flex-end;
 		justify-content: flex-end;
 	}
@@ -148,28 +150,35 @@
 </style>
 
 <script type="text/javascript"> 
-	if (localStorage.acessou) { localStorage.acessou = 2}
-	else{
-		localStorage.acessou = 1
-	}
-	if (localStorage.acessou == 1) 
-	{
-		setTimeout(ativando,10000)
-		function ativando()
+//Verificação de acesso
+
+		if (localStorage.jaacessou) { localStorage.jaacessou = 2}
+		else{
+			localStorage.jaacessou = 1
+		}
+		if (localStorage.jaacessou == 1) 
 		{
+			setTimeout(ativando,10000)
+			function ativando()
+			{
+				document.getElementById('mensagem').style.display = "none"
+				document.getElementById('base').style.display = "block"
+			}
+		}
+		else
+		{ 
 			document.getElementById('mensagem').style.display = "none"
 			document.getElementById('base').style.display = "block"
 		}
-	}
-	else
-	{ 
-		document.getElementById('mensagem').style.display = "none"
-		document.getElementById('base').style.display = "block"
-	}
 
+//Fim verificação
+
+
+
+//*Inicio do programa*//
 
 var numeros = ["0","1","2","3","4","5","6","7","8","9"]
-var operacoes = ["+","-","*","/","^","."]
+var operacoes = ["+","-","*","/","^"]
 var funcoes = ["C","-1","result"]
 var tela = document.getElementById('tela')
 var visao = ""
@@ -177,16 +186,18 @@ var conta = ""
 var ultimoCaracter = ""
 var open = 0  
 var preenchido = 0
+var virgula = 0
 
 function coletado(button,continha){
 	visao = visao + button
 	conta = conta + continha
 	tela.innerHTML = visao
-	if (visao[visao.length-1] == undefined) {ultimoCaracter = ""}
-	else{ultimoCaracter = visao[visao.length-1]}
+	ultimoCaracter = visao[visao.length-1]
+	if (ultimoCaracter == undefined) {ultimoCaracter = ""}
 }
 
 function apagando(){
+	if (ultimoCaracter == ",") {virgula=0}
 	if (ultimoCaracter == "(") { open = open-1 }
 	if (ultimoCaracter == ")") { open = open+1 }
 	if (ultimoCaracter == "^") {conta = conta.substring(0,conta.length-2)}
@@ -201,25 +212,34 @@ function coletando(button)
 	if ( numeros.includes(button) )
 	{ coletado(button,button) }
 
-	if ( operacoes.includes(button) && !(operacoes.includes(ultimoCaracter) ) )
-	{ operator(button) }
-	
-	if ( operacoes.includes(button) && operacoes.includes(ultimoCaracter) ) {
+	if (button == "," && virgula == 0) {var booeleano = true}else{var booleano = false}
+	console.log(booeleano)
+
+	if ( (operacoes.includes(button) || booeleano) && (operacoes.includes(ultimoCaracter) || ultimoCaracter == ",") ) 
+	{
 		if (visao[visao.length-2] == "(" && ["+","-"].includes(button)) {apagando(); operator()}
 		if (visao[visao.length-2] != "(") {apagando(); operator()}
 	}
 
+	if ( operacoes.includes(button) && !(operacoes.includes(ultimoCaracter) ) )
+	{ operator(button) }
+	if (button == ",") {operator()}
+
 	function operator()
 	{
 		if( ["+","-"].includes(button) )
-		{coletado(button,button) }
+		{ coletado(button,button)}
 
-		if (["*","/","."].includes(button) && ultimoCaracter !=""  && ultimoCaracter != "(") 
-		{ coletado(button,button) }
+		if (["*","/"].includes(button) && ultimoCaracter !=""  && ultimoCaracter != "(") 
+		{ coletado(button,button)}
 
 		if (button == "^" && ultimoCaracter != "" && ultimoCaracter != "(")
 		{coletado(button,"**")}
+
+		if (button == "," && ultimoCaracter != "" && !( ["(",")"].includes(ultimoCaracter) ) && virgula == 0)
+		{coletado(",","."); virgula = 1}
 	}
+	if (operacoes.includes(visao[visao.length-2]) && numeros.includes(ultimoCaracter) ) { virgula = 0}
 
 	if (numeros.includes(button) && open !=0) {preenchido = 1} 
 
@@ -254,12 +274,13 @@ function coletando(button)
 
 	if (funcoes.includes(button)) 
 	{
-		if (button == "C") {visao = "";conta = "";open = 0;preenchido = 0; coletado("","")}
-		if (button == "-1") {apagando(); coletado("","")}
+		if (button == "C") {visao = "";conta = "";open = 0;preenchido = 0; coletado("",""); virgula = 0}
+		if (button == "-1") {apagando(); coletado("","") }
 		if (button == "result") 
 		{var resultado = eval(conta);visao = "" + resultado;conta = visao;coletado("","")}
 	}
 }
+//Fim do programa//
 //Desenvolvido por Eduardo Monteiro. 
 //Etec
 </script>
