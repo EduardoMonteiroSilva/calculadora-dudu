@@ -151,7 +151,9 @@
 
 <script type="text/javascript"> 
 //Verificação de acesso
-
+		localStorage.removeItem('cliente')
+		localStorage.removeItem('acessado')
+		localStorage.removeItem('acessou')
 		if (localStorage.jaacessou) { localStorage.jaacessou = 2}
 		else{
 			localStorage.jaacessou = 1
