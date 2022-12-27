@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Calculadora</title>
+</head>
+<body>
+	<div class="base">
+		<div class="visor" id="tela"></div>
+		<div class="botoes">
+			<div id="del" class="botao" onclick="coletando('C')">C</div>
+			<div id="ex" class="botao" onclick="coletando('-1')">⌦</div>
+			<div id="porce" class="botao" onclick="coletando('()')">()</div>
+			<div id="div" class="botao" onclick="coletando('/')">/</div>
+
+			<div id="7" class="botao" onclick="coletando('7')">7</div>
+			<div id="8" class="botao" onclick="coletando('8')">8</div>
+			<div id="9" class="botao" onclick="coletando('9')">9</div>
+			<div id="multi" class="botao" onclick="coletando('*')">×</div>
+
+			<div id="4" class="botao" onclick="coletando('4')">4</div>
+			<div id="5" class="botao" onclick="coletando('5')">5</div>
+			<div id="6" class="botao" onclick="coletando('6')">6</div>
+			<div id="sub" class="botao" onclick="coletando('-')">-</div>
+
+			<div id="1" class="botao" onclick="coletando('1')">1</div>
+			<div id="2" class="botao" onclick="coletando('2')">2</div>
+			<div id="3" class="botao" onclick="coletando('3')">3</div>
+			<div class="botao" id="+" onclick="coletando('+')">+</div>
+
+			<div id="pot" class="botao" onclick="coletando('^')">^</div>
+			<div id="0" class="botao" onclick="coletando('0')">0</div>
+			<div id="ponto" class="botao" onclick="coletando('.')">,</div>
+			<div id="result" class="botao" onclick="coletando('result')">=</div>
+		</div>
+		
+	</div>
+
+</body>
+</html>
+
+<style type="text/css">
+	#ex{
+		transform: rotateY(-180deg);
+	}
+	body
+	{
+		display: flex;
+		justify-content: center;
+	}
+	.visor
+	{
+		width: 25vw;
+		margin-top: 1vh;
+		height: 4.95vw;
+		margin: 1vw;
+		color: white;
+		background: black;
+		display: flex;
+		font-family: arial;
+		font-size: 2vw;
+		align-items: flex-end;
+		justify-content: flex-end;
+	}
+	.botao
+	{
+		cursor: pointer;
+		font-family: arial;
+		color: white;
+		background: black;
+		border-radius:1vh;
+		margin: 0.52569444vw;
+		height: 3.68vw;
+		display: flex;
+		align-items: center;
+		font-size: 2vw;
+		justify-content: center;
+	}
+	.base
+	{
+		background: gray;
+		width: 27vw;
+		height: 31.5417vw;
+	}
+	.botoes
+	{
+		display: grid;
+		grid-template-rows: 2fr 2fr 2fr 2fr ;
+		grid-template-columns: 1fr 1fr 1fr 1fr ;
+	}
+
+	@media screen and (max-width: 720px)
+	{
+		.base
+		{
+			width: 100vw ;
+			height: 100vh;
+		}
+		.visor
+		{
+			width: 98vw;
+			height: 50vw ;
+			font-size: 8.8vw;
+		}
+		.botao
+		{
+			height: 25vw;
+			font-size: 8.5vw;
+		}
+		body{
+			margin: 0px;
+		}
+	}
+</style>
+
+<script type="text/javascript">
+
+var numeros = ["0","1","2","3","4","5","6","7","8","9"]
+var operacoes = ["+","-","*","/","^","."]
+var funcoes = ["C","-1","result"]
+var tela = document.getElementById('tela')
+var visao = ""
+var conta = ""
+var ultimoCaracter = ""
+var open = 0  
+var preenchido = 0
+
+function coletado(button,continha){
+	visao = visao + button
+	conta = conta + continha
+	tela.innerHTML = visao
+	if (visao[visao.length-1] == undefined) {ultimoCaracter = ""}
+	else{ultimoCaracter = visao[visao.length-1]}
+}
+
+function apagando(){
+	if (ultimoCaracter == "(") { open = open-1 }
+	if (ultimoCaracter == ")") { open = open+1 }
+	if (ultimoCaracter == "^") {conta = conta.substring(0,conta.length-2)}
+	else{conta = conta.substring(0,conta.length-1)}
+	visao = visao.substring(0,visao.length-1) 
+	ultimoCaracter = visao[visao.length-1]
+}
+
+function coletando(button) 
+{
+	if ( numeros.includes(button) && ultimoCaracter == ")"){ var ax = button; button = "*"; coletado(button,button); button = ax }
+	if ( numeros.includes(button) )
+	{ coletado(button,button) }
+
+	if ( operacoes.includes(button) && !(operacoes.includes(ultimoCaracter) ) )
+	{ operator(button) }
+	
+	if ( operacoes.includes(button) && operacoes.includes(ultimoCaracter) ) {
+		if (visao[visao.length-2] == "(" && ["+","-"].includes(button)) {apagando(); operator()}
+		if (visao[visao.length-2] != "(") {apagando(); operator()}
+	}
+
+	function operator()
+	{
+		if( ["+","-"].includes(button) )
+		{coletado(button,button) }
+
+		if (["*","/","."].includes(button) && ultimoCaracter !=""  && ultimoCaracter != "(") 
+		{ coletado(button,button) }
+
+		if (button == "^" && ultimoCaracter != "" && ultimoCaracter != "(")
+		{coletado(button,"**")}
+	}
+
+	if (numeros.includes(button) && open !=0) {preenchido = 1} 
+
+	if (button == "()")
+	{
+		if (open == 0) {preenchido = 0}
+
+		if (open == 0 || ultimoCaracter == "(") 
+		{abrir()}
+		function abrir()
+		{
+			if (ultimoCaracter == ".") {apagando()}
+			if ( numeros.includes(ultimoCaracter) || ultimoCaracter == ")") {button = "*"; coletado(button,button)}
+			button = "("
+			open = open + 1
+			coletado(button,button)
+		}
+		if ( open != 0 && preenchido == 1) 
+		{
+			if ( operacoes.includes(ultimoCaracter) ) 
+				{preenchido=0;abrir()}
+			else
+			{
+				button = ")"
+				open = open-1
+				coletado(button,button)
+				feito = 0
+			}
+		}
+
+	}
+
+	if (funcoes.includes(button)) 
+	{
+		if (button == "C") {visao = "";conta = "";open = 0;preenchido = 0; coletado("","")}
+		if (button == "-1") {apagando(); coletado("","")}
+		if (button == "result") 
+		{var resultado = eval(conta);visao = "" + resultado;conta = visao;coletado("","")}
+	}
+}
+//Desenvolvido por Eduardo Monteiro. 
+//Etec
+</script>
