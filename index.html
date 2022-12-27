@@ -6,7 +6,14 @@
 	<title>Calculadora</title>
 </head>
 <body>
-	<div class="base">
+	<div class="mensagem" id="mensagem">
+		<h1>Olá, mundo</h1>
+		<p>Essa é uma calculadora desenvolvida por Eduardo Monteiro</p>
+		<p>Você está interagindo com a versão 0.9</p>
+		<p>Caso encontre algum erro, sinto muito pelo ocorrido =/</p>
+		<p>Se possível me de um feedback, obrigado.</p>
+	</div>
+	<div class="base" id="base">
 		<div class="visor" id="tela"></div>
 		<div class="botoes">
 			<div id="del" class="botao" onclick="coletando('C')">C</div>
@@ -34,18 +41,40 @@
 			<div id="ponto" class="botao" onclick="coletando('.')">,</div>
 			<div id="result" class="botao" onclick="coletando('result')">=</div>
 		</div>
-		
 	</div>
 
 </body>
 </html>
 
 <style type="text/css">
-	#ex{
+	@keyframes apagar
+	{
+		0%{ filter: opacity(1);}
+		95% { filter: opacity(1); }
+		100% { filter: opacity(0);}
+	}
+
+	.mensagem
+	{
+		animation: apagar 10s;
+		animation-fill-mode:forwards;
+		background: black;
+		width: 100vw;
+		height: 100vh;
+		color: white;
+		text-align: center;
+		font-family: Helvetica;
+		font-size: 3vh;
+
+	}
+
+	#ex
+	{
 		transform: rotateY(-180deg);
 	}
 	body
 	{
+		margin: 0;
 		display: flex;
 		justify-content: center;
 	}
@@ -79,6 +108,7 @@
 	}
 	.base
 	{
+		display: none;
 		background: gray;
 		width: 27vw;
 		height: 31.5417vw;
@@ -92,6 +122,9 @@
 
 	@media screen and (max-width: 720px)
 	{
+		.mensagem{
+			font-size: 2vh;
+		}
 		.base
 		{
 			width: 100vw ;
@@ -114,7 +147,26 @@
 	}
 </style>
 
-<script type="text/javascript">
+<script type="text/javascript"> 
+	if (localStorage.acessou == 1) { localStorage.acessou = 2}
+	else{
+		localStorage.acessou = 1
+	}
+	if (localStorage.acessou == 1) 
+	{
+		setTimeout(ativando,10000)
+		function ativando()
+		{
+			document.getElementById('mensagem').style.display = "none"
+			document.getElementById('base').style.display = "block"
+		}
+	}
+	else
+	{ 
+		document.getElementById('mensagem').style.display = "none"
+		document.getElementById('base').style.display = "block"
+	}
+
 
 var numeros = ["0","1","2","3","4","5","6","7","8","9"]
 var operacoes = ["+","-","*","/","^","."]
